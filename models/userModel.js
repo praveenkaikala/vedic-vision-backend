@@ -31,4 +31,4 @@ const salt=await bycript.genSalt(10)
 this.password=await bycript.hash(this.password,salt)
 })
 const User = mongoose.models.User || mongoose.model('User', UserModel);
-export default User
+module.exports = User;
