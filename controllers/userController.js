@@ -48,7 +48,7 @@ const registerController=expressAsyncHandler( async (req,res)=>{
     }
     if(!userexist && !username)
    {
-    const photoURL = photo ? `${req.protocol}://${req.get('host')}/uploads/photos/${photo.filename}` : null;
+    const photoURL =photo.filename || null;
     user= await userModel.create({firstName,lastName,userName,email,password, photo: photoURL })
    }
    else{
