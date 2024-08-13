@@ -1,7 +1,15 @@
 const mongoose=require("mongoose")
 const bycript=require("bcryptjs")
 const UserModel=mongoose.Schema({
-    name:{
+    firstName:{
+        type:String,
+        required:true,
+    },
+    lastName:{
+        type:String,
+        required:true,
+    },
+    userName:{
         type:String,
         required:true,
     },
@@ -13,6 +21,9 @@ const UserModel=mongoose.Schema({
         type:String,
         required:true,
     },
+    photo:{
+        type:String
+    }
 },
 {
     timeStamp:true,

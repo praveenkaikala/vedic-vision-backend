@@ -3,31 +3,37 @@ const expressAsyncHandler=require("express-async-handler")
 const userModel=require('../models/userModel')
 const generateToken=require("../config/createToken")
 require("dotenv")
-const loginController=expressAsyncHandler(async (req,res)=>{
-  const {name,password}=req.body;
-  const user=await userModel.findOne({name})
-  if(user && (await user.matchPassword(password)))
-  {
-    res.status(200)
-    res.json({
-        _id:user.id,
-        name:user.name,
-        email:user.email,
-        password:user.password,
-        token:generateToken(user._id),
-    })
+const loginController = expressAsyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await userModel.findOne({
+      $or: [{ email:email }, { userName:email }]
+    });
+    if (user && (await user.matchPassword(password))) {
+      return res.status(200).json({
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName, // Ensure this is lowercase if that's how it's stored
+        userName: user.userName,
+        token: generateToken(user._id)
+      });
+    } else {
+     return res.status(400).send("user not found");
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-  else{
-    res.status(400)
-    throw new Error("username or password incorrect")
-  }
-})
+});
+
 const registerController=expressAsyncHandler( async (req,res)=>{
-    const {name,email,password}=req.body;
+    const {firstName,lastName,email,password,userName}=req.body;
     let user;
-    if(!name || !email || !password)
+    const photo = req.file;
+    if(!userName || !email || !password || !lastName || !firstName)
     { 
         res.send(400)
+
         // throw error("fields are not filled ")
     }
     const userexist=await userModel.findOne({email})
@@ -35,27 +41,22 @@ const registerController=expressAsyncHandler( async (req,res)=>{
        res.status(401)
         res.send("email already exist")
     }
-    const username=await userModel.findOne({name})
+    const username=await userModel.findOne({userName})
     if(username){
        res.status(401)
         res.send("username already exist")
     }
     if(!userexist && !username)
    {
-    user= await userModel.create({name,email,password})
+    const photoURL = photo ? `${req.protocol}://${req.get('host')}/uploads/photos/${photo.filename}` : null;
+    user= await userModel.create({firstName,lastName,userName,email,password, photo: photoURL })
    }
    else{
     res.status(400)
     res.send("not created")
    }
     if(user){
-        res.status(201).json({
-            id:user._id,
-            name:user.name,
-            email:user.email,
-            password:user.password,
-            token:generateToken(user._id)
-        })
+        res.status(201).json({message:"register successsfull"})
     }
     else{
         res.status(400)
