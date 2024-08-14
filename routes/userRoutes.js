@@ -1,6 +1,6 @@
 // userRoutes.js
 const express = require('express');
-const { loginController, registerController, fetchAllUserController } = require('../controllers/userController');
+const { loginController, registerController } = require('../controllers/userController');
 const router = express.Router();
 const { protect } = require('../middlewares/authMiddleware');
 const multer  = require('multer')
@@ -19,6 +19,4 @@ const storage = multer.diskStorage({
 
 router.post('/login', loginController);
 router.post('/register', upload.single('photo'), registerController); // Use upload.single('photo') for file uploads
-router.get('/fetchuser', protect, fetchAllUserController);
-
 module.exports = router;

@@ -3,25 +3,25 @@ const mongoose = require('mongoose');
 const YogaModel = mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "users",
-        required: true // Ensure that userId is always provided
+        ref: "User",
+        required: true
     },
     day: {
         type: String,
-        default: "0" // Default value for day
+        default: "0" 
     },
     calories: {
         type: String,
-        default: "0" // Default value for calories
+        default: "0" 
     },
     plan: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "plans",
-        default: null // Optional: if you want to allow plans to be optional
+        default: null 
     }
 }, {
-    timestamps: true, // Automatically adds createdAt and updatedAt fields
+    timestamps: true, 
 });
 
-const Yoga = mongoose.models.Yoga || mongoose.model('Yogadata', YogaModel);
+const Yoga = mongoose.model('Yogadata', YogaModel);
 module.exports = Yoga;

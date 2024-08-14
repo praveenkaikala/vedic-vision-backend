@@ -41,5 +41,5 @@ if(!this.isModified)
 const salt=await bycript.genSalt(10)
 this.password=await bycript.hash(this.password,salt)
 })
-const User = mongoose.models.User || mongoose.model('User', UserModel);
+const User = mongoose.model('User', UserModel);
 module.exports = User;

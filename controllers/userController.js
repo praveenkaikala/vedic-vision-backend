@@ -4,6 +4,7 @@ const userModel=require('../models/userModel')
 
 const generateToken=require("../config/createToken")
 const Yoga = require("../models/yogaData")
+const User = require("../models/userModel")
 
 require("dotenv")
 const loginController = expressAsyncHandler(async (req, res) => {
@@ -14,12 +15,19 @@ const loginController = expressAsyncHandler(async (req, res) => {
       $or: [{ email:email }, { userName:email }]
     });
     if (user && (await user.matchPassword(password))) {
+      const yoga = await Yoga.findOne({ userId: user._id }).populate('userId');
+
       return res.status(200).json({
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName, // Ensure this is lowercase if that's how it's stored
-        userName: user.userName,
-        token: generateToken(user._id)
+        id: yoga._id,
+        day: yoga.day,
+        calories: yoga.calories,
+        userDetails: {
+          id: yoga.userId._id,
+          firstName: yoga.userId.firstName,
+          lastName: yoga.userId.lastName,
+          userName: yoga.userId.userName,
+        },
+        token: generateToken(user._id),
       });
     } else {
      return res.status(400).send("user not found");
@@ -72,24 +80,5 @@ const registerController=expressAsyncHandler( async (req,res)=>{
 
 })
 
-const fetchAllUserController=expressAsyncHandler(async (req,res)=>{
-  const keyword=req.query.search?{
-    $or:[
-        {name:{$regex:req.query.search,$options:"i"}},
-        {email:{$regex:req.query.search,$options:"i"}},
-    ],
-  }
-:{};
-try{
-    const user=await userModel.find(keyword).find({
-    _id:{$ne:req.user.id},
-});
-res.send(user)
-}
-catch(err)
-{
-    res.status(401);
-    throw new Error("user not found ")
-}
-})
-module.exports={loginController,registerController,fetchAllUserController}
+
+module.exports={loginController,registerController}
