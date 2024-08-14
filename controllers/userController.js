@@ -51,9 +51,8 @@ const loginController = expressAsyncHandler(async (req, res) => {
 });
 
 const registerController=expressAsyncHandler( async (req,res)=>{
-    const {firstName,lastName,email,password,userName}=req.body;
+    const {firstName,lastName,email,password,userName,phone}=req.body;
     let user;
-    const photo = req.file;
     if(!userName || !email || !password || !lastName || !firstName)
     { 
         res.send(400)
@@ -72,8 +71,7 @@ const registerController=expressAsyncHandler( async (req,res)=>{
     }
     if(!userexist && !username)
    {
-    const photoURL =photo.filename || null;
-    user= await userModel.create({firstName,lastName,userName,email,password, photo: photoURL })
+    user= await userModel.create({firstName,lastName,userName,email,password,phone })
     const yogaEntry = await Yoga.create({
       userId: user._id
   });
