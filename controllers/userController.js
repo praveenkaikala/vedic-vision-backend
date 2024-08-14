@@ -1,12 +1,23 @@
 const express=require("express")
 const expressAsyncHandler=require("express-async-handler")
 const userModel=require('../models/userModel')
-
+const nodemailer = require('nodemailer');
 const generateToken=require("../config/createToken")
 const Yoga = require("../models/yogaData")
 const User = require("../models/userModel")
+const dotenv=require("dotenv")
+dotenv.config()
+const transporter = nodemailer.createTransport({
+  service:'gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false, // use SSL
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
+  }
+});
 
-require("dotenv")
 const loginController = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -26,6 +37,7 @@ const loginController = expressAsyncHandler(async (req, res) => {
           firstName: yoga.userId.firstName,
           lastName: yoga.userId.lastName,
           userName: yoga.userId.userName,
+          photo:yoga.userId.photo
         },
         token: generateToken(user._id),
       });
@@ -79,6 +91,32 @@ const registerController=expressAsyncHandler( async (req,res)=>{
 
 
 })
+const generateOTP = () => {
+  return crypto.randomInt(100000, 999999).toString(); // Generates a 6-digit OTP
+};
+const sendEmail=expressAsyncHandler( async (req,res)=>{
+  try {
+    const {email}=req.body;
+    const otp = '1234567';
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: 'kaikalapraveen24@gmail.com',
+      subject: 'Your OTP Code',
+      text: `Your OTP code is ${otp}`, // Include the OTP in the email body
+    };
+   await transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        console.log('Error', error);
+        return res.status(400).json({message:"email  ssend failed"})
+      } else {
+        console.log('Email sent: ' + info.response);
+        return res.status(200).json({message:"email send"})
+      }
+    })
+  } catch (error) {
+    return res.send(error)
+    console.log(error)
+  }
+})
 
-
-module.exports={loginController,registerController}
+module.exports={loginController,registerController,sendEmail}
