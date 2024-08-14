@@ -21,6 +21,10 @@ const UserModel=mongoose.Schema({
         type:String,
         required:true,
     },
+    phone:{
+        type:String,
+        required:true,
+    },
     photo:{
         type:String
     }

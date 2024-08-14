@@ -37,6 +37,7 @@ const loginController = expressAsyncHandler(async (req, res) => {
           firstName: yoga.userId.firstName,
           lastName: yoga.userId.lastName,
           userName: yoga.userId.userName,
+          phone:yoga.userId.phone,
           photo:yoga.userId.photo
         },
         token: generateToken(user._id),
@@ -97,9 +98,10 @@ const generateOTP = () => {
 const sendEmail=expressAsyncHandler( async (req,res)=>{
   try {
     const {email}=req.body;
+    console.log(email)
     const otp = '1234567';
     const mailOptions = {
-      from: process.env.EMAIL,
+      from: process.env.email,
       to: 'kaikalapraveen24@gmail.com',
       subject: 'Your OTP Code',
       text: `Your OTP code is ${otp}`, // Include the OTP in the email body
