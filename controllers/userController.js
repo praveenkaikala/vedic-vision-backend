@@ -1,7 +1,10 @@
 const express=require("express")
 const expressAsyncHandler=require("express-async-handler")
 const userModel=require('../models/userModel')
+
 const generateToken=require("../config/createToken")
+const Yoga = require("../models/yogaData")
+
 require("dotenv")
 const loginController = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -50,6 +53,9 @@ const registerController=expressAsyncHandler( async (req,res)=>{
    {
     const photoURL =photo.filename || null;
     user= await userModel.create({firstName,lastName,userName,email,password, photo: photoURL })
+    const yogaEntry = await Yoga.create({
+      userId: user._id
+  });
    }
    else{
     res.status(400)
