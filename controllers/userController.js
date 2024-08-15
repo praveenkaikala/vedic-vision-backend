@@ -103,7 +103,7 @@ function generateOTP(length = 6) {
 }
 const sendEmail=expressAsyncHandler( async (req,res)=>{
   try {
-    const {email}=req.body;
+    const {email,userName}=req.body;
 
 
     const transporter = nodemailer.createTransport({
@@ -123,40 +123,48 @@ const sendEmail=expressAsyncHandler( async (req,res)=>{
     const mailOptions = {
       from: process.env.email,
       to: email,
-      subject: 'Your OTP Code',
-      text: `Hi,\n\nThank you for using our service.\n`,
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              color: #333;
-            }
-            .container {
-              padding: 20px;
-            }
-            .otp-code {
-              font-size: 24px;
-              font-weight: bold;
-            }
-            .footer {
-              margin-top: 20px;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <p>Hi,</p>
-            <p></p>
-            <p>you completed task today</span></p>
-            <p>you burn calaries : 50 </p>
-           
-          </div>
-        </body>
-        </html>
-      `,    };
+      subject: 'Your Daily Task Summary',
+  text: `Hi ${userName},\n\nThank you for using our service.\n\nYou completed your tasks today and burned 50 calories.`,
+  html: `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          color: #333;
+        }
+        .container {
+          padding: 20px;
+        }
+        .header {
+          font-size: 18px;
+          font-weight: bold;
+          margin-bottom: 10px;
+        }
+        .otp-code {
+          font-size: 24px;
+          font-weight: bold;
+        }
+        .footer {
+          margin-top: 20px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <p class="header">Hi ${userName},</p>
+        <p>Thank you for using our service.</p>
+        <p>You completed your tasks today and burned 50 calories.</p>
+        <p>Keep up the great work!</p>
+        <div class="footer">
+          <p>Best regards,<br>Your Company Team</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+};
    await transporter.sendMail(mailOptions, function(error, info){
       if (error) {
         console.log('Error', error);
