@@ -155,7 +155,7 @@ const sendEmail=expressAsyncHandler( async (req,res)=>{
       <div class="container">
         <p class="header">Hi ${userName?userName:"User"},</p>
         <p>Thank you for using our service.</p>
-        <p>You completed your tasks today and burned <b>50 calories.<b></p>
+        <p>You completed your tasks today and burned <b>50 calories.</b></p>
         <p>Keep up the great work!</p>
         <div class="footer">
           <p>Best regards,<br>Your Team DECODERZ</p>
