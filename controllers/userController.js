@@ -272,5 +272,17 @@ const sendEmail=expressAsyncHandler( async (req,res)=>{
     console.log(error)
   }
 })
-
-module.exports={loginController,registerController,sendEmail,updateCalories}
+const yogaFetchData=expressAsyncHandler( async (req,res)=>{
+  try {
+    const {userId}=req.body
+    const yogaData=await Yoga.findOne({userId})
+    return res.status(200).json({
+      totalCalories:yogaData.totalCalories,
+      lastyoga:yogaData.calories
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(400)
+  }
+})
+module.exports={loginController,registerController,sendEmail,updateCalories,yogaFetchData}
