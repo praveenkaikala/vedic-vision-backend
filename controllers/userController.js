@@ -101,11 +101,16 @@ function generateOTP(length = 6) {
   const otp = Math.floor(Math.random() * Math.pow(10, length)).toString().padStart(length, '0');
   return otp;
 }
-const sendEmail=expressAsyncHandler( async (req,res)=>{
+const updateCalories=expressAsyncHandler( async (req,res)=>{
   try {
-    const {email,userName}=req.body;
-
-
+    const {score,email,userName,userId}=req.body;
+    const CALORIES_PER_MINUTE = 5; 
+    const updatedYoga = await Yoga.findOneAndUpdate(
+      { userId },
+      { $set: { calories:score } }, // Update the calories field
+      { new: true } // Return the updated document
+    );
+    
     const transporter = nodemailer.createTransport({
       service:'gmail',
       host: 'smtp.gmail.com',
@@ -120,11 +125,13 @@ const sendEmail=expressAsyncHandler( async (req,res)=>{
      
     console.log(email)
     const otp =generateOTP(6)
+    const yogadata=await Yoga.findOne({userId})
+    console.log(yogadata)
     const mailOptions = {
       from: process.env.email,
       to: email,
       subject: 'Your Daily Task Summary',
-  text: `Hi ${userName},\n\nThank you for using our service.\n\nYou completed your tasks today and burned 50 calories.`,
+  text: `Hi ${userName},\n\nThank you for using our service.\n\nYou completed your tasks today and burned ${yogadata?.calories || '0'} calories.`,
   html: `
     <!DOCTYPE html>
     <html>
@@ -155,7 +162,87 @@ const sendEmail=expressAsyncHandler( async (req,res)=>{
       <div class="container">
         <p class="header">Hi ${userName?userName:"User"},</p>
         <p>Thank you for using our service.</p>
-        <p>You completed your tasks today and burned <b>50 calories.</b></p>
+        <p>You completed your tasks today and burned <b> ${yogadata?.calories || '0'} calories.</b></p>
+        <p>Keep up the great work!</p>
+        <div class="footer">
+          <p>Best regards,<br>Your Team DECODERZ</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+};
+   await transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        console.log('Error', error);
+        return res.status(400).json({message:"email  ssend failed"})
+      } else {
+        console.log('Email sent: ' + info.response);
+        return res.status(200).json({message:"email send"})
+      }
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(400);
+  }
+})
+const sendEmail=expressAsyncHandler( async (req,res)=>{
+  try {
+    const {email,userName,userId}=req.body;
+
+
+    const transporter = nodemailer.createTransport({
+      service:'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false, // use SSL
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD,
+      }
+    });
+
+     
+    console.log(email)
+    const otp =generateOTP(6)
+    const yogadata=await Yoga.findOne({userId})
+    console.log(yogadata)
+    const mailOptions = {
+      from: process.env.email,
+      to: email,
+      subject: 'Your Daily Task Summary',
+  text: `Hi ${userName},\n\nThank you for using our service.\n\nYou completed your tasks today and burned ${yogadata?.calories || '0'} calories.`,
+  html: `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          color: #333;
+        }
+        .container {
+          padding: 20px;
+        }
+        .header {
+          font-size: 18px;
+          font-weight: bold;
+          margin-bottom: 10px;
+        }
+        .otp-code {
+          font-size: 24px;
+          font-weight: bold;
+        }
+        .footer {
+          margin-top: 20px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <p class="header">Hi ${userName?userName:"User"},</p>
+        <p>Thank you for using our service.</p>
+        <p>You completed your tasks today and burned <b> ${yogadata?.calories || '0'} calories.</b></p>
         <p>Keep up the great work!</p>
         <div class="footer">
           <p>Best regards,<br>Your Team DECODERZ</p>
@@ -180,4 +267,4 @@ const sendEmail=expressAsyncHandler( async (req,res)=>{
   }
 })
 
-module.exports={loginController,registerController,sendEmail}
+module.exports={loginController,registerController,sendEmail,updateCalories}
