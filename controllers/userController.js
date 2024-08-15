@@ -32,6 +32,7 @@ const loginController = expressAsyncHandler(async (req, res) => {
         id: yoga._id,
         day: yoga.day,
         calories: yoga.calories,
+        totalCalories:yoga.totalCalories,
         userDetails: {
           id: yoga.userId._id,
           firstName: yoga.userId.firstName,
@@ -105,9 +106,14 @@ const updateCalories=expressAsyncHandler( async (req,res)=>{
   try {
     const {score,email,userName,userId,pose}=req.body;
     const CALORIES_PER_MINUTE = 5; 
+    const prevyoga = await Yoga.findOne(
+      { userId })
+      const total=Number(prevyoga.totalCalories)+Number(score)
     const updatedYoga = await Yoga.findOneAndUpdate(
       { userId },
-      { $set: { calories:score } }, // Update the calories field
+      { $set: { calories:score,
+        totalCalories:total
+       } }, // Update the calories field
       { new: true } // Return the updated document
     );
     

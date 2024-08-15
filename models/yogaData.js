@@ -14,6 +14,10 @@ const YogaModel = mongoose.Schema({
         type: String,
         default: "0" 
     },
+    totalCalories: {
+        type: String,
+        default: "0" 
+    },
     plan: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "plans",
