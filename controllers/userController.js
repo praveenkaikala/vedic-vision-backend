@@ -103,7 +103,7 @@ function generateOTP(length = 6) {
 }
 const updateCalories=expressAsyncHandler( async (req,res)=>{
   try {
-    const {score,email,userName,userId}=req.body;
+    const {score,email,userName,userId,pose}=req.body;
     const CALORIES_PER_MINUTE = 5; 
     const updatedYoga = await Yoga.findOneAndUpdate(
       { userId },
@@ -162,7 +162,7 @@ const updateCalories=expressAsyncHandler( async (req,res)=>{
       <div class="container">
         <p class="header">Hi ${userName?userName:"User"},</p>
         <p>Thank you for using our service.</p>
-        <p>You completed your tasks today and burned <b> ${yogadata?.calories || '0'} calories.</b></p>
+        <p>You completed your tasks today and burned <b> ${yogadata?.calories.substr(0,4) || '0'} calories on pose <b>${pose}</b>.</b></p>
         <p>Keep up the great work!</p>
         <div class="footer">
           <p>Best regards,<br>Your Team DECODERZ</p>
