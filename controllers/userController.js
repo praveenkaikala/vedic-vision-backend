@@ -38,7 +38,7 @@ const loginController = expressAsyncHandler(async (req, res) => {
           lastName: yoga.userId.lastName,
           userName: yoga.userId.userName,
           phone:yoga.userId.phone,
-          photo:yoga.userId.photo
+
         },
         token: generateToken(user._id),
       });
@@ -90,20 +90,72 @@ const registerController=expressAsyncHandler( async (req,res)=>{
 
 
 })
-const generateOTP = () => {
-  return crypto.randomInt(100000, 999999).toString(); // Generates a 6-digit OTP
-};
+function generateOTP(length = 6) {
+  // Ensure the length is at least 1
+  if (length < 1) {
+    throw new Error('OTP length must be at least 1');
+  }
+  
+  // Generate a random OTP by creating a random number and padding it
+  const otp = Math.floor(Math.random() * Math.pow(10, length)).toString().padStart(length, '0');
+  return otp;
+}
 const sendEmail=expressAsyncHandler( async (req,res)=>{
   try {
     const {email}=req.body;
+
+
+    const transporter = nodemailer.createTransport({
+      service:'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false, // use SSL
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD,
+      }
+    });
+
+     
     console.log(email)
-    const otp = '1234567';
+    const otp =generateOTP(6)
     const mailOptions = {
       from: process.env.email,
-      to: 'kaikalapraveen24@gmail.com',
+      to: email,
       subject: 'Your OTP Code',
-      text: `Your OTP code is ${otp}`, // Include the OTP in the email body
-    };
+      text: `Hi,\n\nThank you for using our service.\n\nHere is your OTP code: ${otp}\n\nPlease use this code to complete your verification. This code is valid for 10 minutes.\n\nIf you did not request this code, please ignore this email.\n\nBest regards,\n[Your Company Name]`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              color: #333;
+            }
+            .container {
+              padding: 20px;
+            }
+            .otp-code {
+              font-size: 24px;
+              font-weight: bold;
+            }
+            .footer {
+              margin-top: 20px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <p>Hi,</p>
+            <p></p>
+            <p>you completed task today</span></p>
+            <p>you burn calaries : 50 </p>
+           
+          </div>
+        </body>
+        </html>
+      `,    };
    await transporter.sendMail(mailOptions, function(error, info){
       if (error) {
         console.log('Error', error);
