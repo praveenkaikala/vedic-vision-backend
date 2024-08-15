@@ -38,6 +38,7 @@ const loginController = expressAsyncHandler(async (req, res) => {
           lastName: yoga.userId.lastName,
           userName: yoga.userId.userName,
           phone:yoga.userId.phone,
+          email:yoga.userId.email,
 
         },
         token: generateToken(user._id),
@@ -123,7 +124,7 @@ const sendEmail=expressAsyncHandler( async (req,res)=>{
       from: process.env.email,
       to: email,
       subject: 'Your OTP Code',
-      text: `Hi,\n\nThank you for using our service.\n\nHere is your OTP code: ${otp}\n\nPlease use this code to complete your verification. This code is valid for 10 minutes.\n\nIf you did not request this code, please ignore this email.\n\nBest regards,\n[Your Company Name]`,
+      text: `Hi,\n\nThank you for using our service.\n`,
       html: `
         <!DOCTYPE html>
         <html>
